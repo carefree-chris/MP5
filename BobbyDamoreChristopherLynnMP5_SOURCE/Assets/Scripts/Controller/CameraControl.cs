@@ -10,18 +10,32 @@ public class CameraControl : MonoBehaviour
 
     void Start()
     {
-        lookAtPoint = thisCam.transform.localPosition + 30.0f * thisCam.transform.forward;
+		lookAtPoint = Vector3.zero;
+		thisCam.transform.LookAt (lookAtPoint);
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftAlt))
-        {
-            UpdateTumble();
-            UpdateTrack();
-            UpdateDolly();
-        }
+		if (Input.GetKey (KeyCode.LeftAlt)) 
+		{
+			UpdateTumble ();
+			UpdateTrack ();
+			UpdateDolly ();
+		} 
     }
+
+    // Uses a raycast to return the gameobject that the mouse is pointing to
+	public GameObject UpdateSelection()
+	{
+		Ray mouseToWorld = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit hit;
+
+		if (Physics.Raycast(mouseToWorld, out hit))
+		{
+			return hit.collider.gameObject;
+		}
+		return null;
+	}
 
     // Rotate camera around look at point
     private void UpdateTumble()
