@@ -124,7 +124,7 @@ public struct Matrix3x3
         return outVector;
     }
 
-    public static Matrix3x3 MultiplyMatrix3x3(Matrix3x3 m1, Matrix3x3 m2)
+    public static Matrix3x3 MultiplyMatrix3x3(Matrix3x3 m2, Matrix3x3 m1)
     {
         Matrix3x3 m = new Matrix3x3();
 

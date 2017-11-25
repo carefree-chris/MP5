@@ -5,6 +5,7 @@ public class ResolutionControl : MonoBehaviour {
     public SliderWithEcho NResolutionSlider;
     public SliderWithEcho MResolutionSlider;
     public MyMesh mMesh;
+    public MainControl mMainControl;
 
 	// Use this for initialization
 	void Start () {
@@ -18,10 +19,12 @@ public class ResolutionControl : MonoBehaviour {
     void NResolutionChanged(float n)
     {
         mMesh.SetResolution((int)n, mMesh.M);
+        mMainControl.Unselect();
     }
 
     void MResolutionChanged(float m)
     {
         mMesh.SetResolution(mMesh.N, (int)m);
+        mMainControl.Unselect();
     }
 }

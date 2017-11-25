@@ -36,8 +36,8 @@ public class XFormControl : MonoBehaviour
             R.isOn = false;
             S.isOn = false;
             Vector3 p = mPreviousSliderValues[0];
-            X.InitSliderRange(-2, 2, p.y);
-            Y.InitSliderRange(-2, 2, p.x);
+            X.InitSliderRange(-2, 2, p.x);
+            Y.InitSliderRange(-2, 2, p.y);
             Z.InitSliderRange(-2, 2, p.z);
             Z.SetInactive();
             modeChanging = false;
@@ -53,8 +53,8 @@ public class XFormControl : MonoBehaviour
             R.isOn = false;
             S.isOn = true;
             Vector3 s = mPreviousSliderValues[1];
-            X.InitSliderRange(0.1f, 20, s.y);
-            Y.InitSliderRange(0.1f, 20, s.x);
+            X.InitSliderRange(0.1f, 20, s.x);
+            Y.InitSliderRange(0.1f, 20, s.y);
             Z.InitSliderRange(0.1f, 20, s.z);
             Z.SetInactive();
             modeChanging = false;
@@ -88,7 +88,7 @@ public class XFormControl : MonoBehaviour
             else mPreviousSliderValues[2].x = v;
 
             Vector3 p = GetSelectedXformParameter();
-            p.y = v;
+            p.x = v;
             SetSelectedXform(ref p, v);
         }
     }
@@ -102,7 +102,7 @@ public class XFormControl : MonoBehaviour
             else mPreviousSliderValues[2].y = v;
 
             Vector3 p = GetSelectedXformParameter();
-            p.x = v;
+            p.y = v;
             SetSelectedXform(ref p, v);
         }
     }
