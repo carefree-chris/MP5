@@ -8,7 +8,7 @@ public class XFormControl : MonoBehaviour
     public Text ObjectName;
 
     private MyMesh mMesh;
-    private Vector3 mPreviousSliderValues = Vector3.zero;
+    private Vector3[] mPreviousSliderValues = new Vector3[3];
     private bool modeChanging = false;
 
     // Use this for initialization
@@ -35,12 +35,11 @@ public class XFormControl : MonoBehaviour
             T.isOn = true;
             R.isOn = false;
             S.isOn = false;
-            Vector3 p = GetSelectedXformParameter();
-            mPreviousSliderValues = p;
-            X.InitSliderRange(-2, 2, p.x);
-            Y.InitSliderRange(-2, 2, p.y);
+            Vector3 p = mPreviousSliderValues[0];
+            X.InitSliderRange(-2, 2, p.y);
+            Y.InitSliderRange(-2, 2, p.x);
             Z.InitSliderRange(-2, 2, p.z);
-            Y.SetInactive();
+            Z.SetInactive();
             modeChanging = false;
         }
     }
@@ -53,12 +52,11 @@ public class XFormControl : MonoBehaviour
             T.isOn = false;
             R.isOn = false;
             S.isOn = true;
-            Vector3 s = GetSelectedXformParameter();
-            mPreviousSliderValues = s;
-            X.InitSliderRange(0.1f, 20, s.x);
-            Y.InitSliderRange(0.1f, 20, s.y);
+            Vector3 s = mPreviousSliderValues[1];
+            X.InitSliderRange(0.1f, 20, s.y);
+            Y.InitSliderRange(0.1f, 20, s.x);
             Z.InitSliderRange(0.1f, 20, s.z);
-            Y.SetInactive();
+            Z.SetInactive();
             modeChanging = false;
         }
     }
@@ -71,14 +69,12 @@ public class XFormControl : MonoBehaviour
             T.isOn = false;
             R.isOn = true;
             S.isOn = false;
-            Vector3 r = GetSelectedXformParameter();
-            mPreviousSliderValues = r;
+            Vector3 r = mPreviousSliderValues[2];
             X.InitSliderRange(-180, 180, r.x);
             Y.InitSliderRange(-180, 180, r.y);
             Z.InitSliderRange(-180, 180, r.z);
-            mPreviousSliderValues = r;
             X.SetInactive();
-            Z.SetInactive();
+            Y.SetInactive();
             modeChanging = false;
         }
     }
@@ -87,12 +83,13 @@ public class XFormControl : MonoBehaviour
     {
         if (!modeChanging)
         {
+            if(T.isOn) mPreviousSliderValues[0].x = v;
+            else if (S.isOn) mPreviousSliderValues[1].x = v;
+            else mPreviousSliderValues[2].x = v;
+
             Vector3 p = GetSelectedXformParameter();
-            // if not in rotation, next two lines of work would be wasted
-            float dx = v - mPreviousSliderValues.x;
-            mPreviousSliderValues.x = v;
-            p.x = v;
-            SetSelectedXform(ref p, dx);
+            p.y = v;
+            SetSelectedXform(ref p, v);
         }
     }
 
@@ -100,12 +97,13 @@ public class XFormControl : MonoBehaviour
     {
         if (!modeChanging)
         {
+            if (T.isOn) mPreviousSliderValues[0].y = v;
+            else if (S.isOn) mPreviousSliderValues[1].y = v;
+            else mPreviousSliderValues[2].y = v;
+
             Vector3 p = GetSelectedXformParameter();
-            // if not in rotation, next two lines of work would be wasted
-            float dy = v - mPreviousSliderValues.y;
-            mPreviousSliderValues.y = v;
-            p.y = v;
-            SetSelectedXform(ref p, dy);
+            p.x = v;
+            SetSelectedXform(ref p, v);
         }
     }
 
@@ -113,21 +111,26 @@ public class XFormControl : MonoBehaviour
     {
         if (!modeChanging)
         {
+            if (T.isOn) mPreviousSliderValues[0].z = v;
+            else if (S.isOn) mPreviousSliderValues[1].z = v;
+            else mPreviousSliderValues[2].z = v;
+
             Vector3 p = GetSelectedXformParameter();
-            // if not in rotation, next two lines of work would be wasterd
-            float dz = v - mPreviousSliderValues.z;
-            mPreviousSliderValues.z = v;
             p.z = v;
-            SetSelectedXform(ref p, dz);
+            SetSelectedXform(ref p, v);
         }
     }
 
     public void SetSelectedMesh(MyMesh mesh)
     {
         mMesh = mesh;
-        mPreviousSliderValues = Vector3.zero;
         if (mesh != null)
+        {
             ObjectName.text = "Texture UV Controls";
+            mPreviousSliderValues[0] = Vector3.zero;
+            mPreviousSliderValues[1] = Vector3.one;
+            mPreviousSliderValues[2] = Vector3.zero;
+        }
         else
             ObjectName.text = "Disconnected From Mesh";
         ObjectSetUI();
@@ -150,10 +153,6 @@ public class XFormControl : MonoBehaviour
             if (mMesh != null)
             {
                 p = mMesh.GetTranslation();
-
-                // Change to reflect our 3D space
-                p.z = p.y;
-                p.y = 0.0f;
             }
             else
                 p = Vector3.zero;
@@ -163,17 +162,20 @@ public class XFormControl : MonoBehaviour
             if (mMesh != null)
             {
                 p = mMesh.GetScale();
-
-                // Change to reflect our 3D space
-                p.z = p.y;
-                p.y = 1.0f;
+                p.z = 1;
             }
             else
                 p = Vector3.one;
         }
         else
         {
-            p = Vector3.zero;
+            if (mMesh != null)
+            {
+                p = Vector3.zero;
+                p.z = mMesh.GetRotation();
+            }
+            else
+                p = Vector3.zero;
         }
         return p;
     }
@@ -183,7 +185,7 @@ public class XFormControl : MonoBehaviour
         if (mMesh == null)
             return;
 
-        Vector2 xform = new Vector2(p.x, p.z);
+        Vector2 xform = new Vector2(p.x, p.y);
 
         if (T.isOn)
         {
@@ -198,4 +200,5 @@ public class XFormControl : MonoBehaviour
             mMesh.SetRotation(r);
         }
     }
+
 }

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
-using System;
 
 public class SliderWithEcho : MonoBehaviour
 {
@@ -14,6 +13,7 @@ public class SliderWithEcho : MonoBehaviour
         mSlider.maxValue = v2;
         mSlider.value = x;
         mSlider.enabled = true;
+        mEcho.text = x.ToString();
     }
 
     public void SetSliderListener(UnityAction<float> xValueChanged)
