@@ -3,6 +3,7 @@
 public class MainControl : MonoBehaviour {
 
 	public CameraControl mCamControl;
+    public XFormControl mXFormControl;
 	public GameObject mSelected;
     public MyMesh mMesh;
 
@@ -11,6 +12,7 @@ public class MainControl : MonoBehaviour {
         Debug.Assert(mCamControl != null);
         Debug.Assert(mMesh != null);
         mSelected = null;
+        mXFormControl.SetSelectedMesh(mMesh);
 	}
 	
 	// Update is called once per frame
@@ -38,4 +40,5 @@ public class MainControl : MonoBehaviour {
             mSelected.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
         }
 	}
+
 }
