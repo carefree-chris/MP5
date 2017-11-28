@@ -9,6 +9,11 @@ public class ResolutionControl : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        InitSliders();
+    }
+
+    void InitSliders()
+    {
         NResolutionSlider.InitSliderRange(2.0f, 20.0f, mMesh.N);
         MResolutionSlider.InitSliderRange(2.0f, 20.0f, mMesh.M);
 
