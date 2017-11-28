@@ -349,6 +349,8 @@ public class MyCylinderMesh : MonoBehaviour {
         for (int i = 0; i < normalSums.Length; ++i)
         {
             normalSums[i].Normalize();
+            //Negated because normals were facing the wrong way for our cylinder
+            normalSums[i] = -normalSums[i];
         }
 
         // Update normal LineSegments and return normals
