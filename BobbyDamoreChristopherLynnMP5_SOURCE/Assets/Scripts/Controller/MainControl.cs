@@ -1,29 +1,89 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MainControl : MonoBehaviour {
 
-	public CameraControl mCamControl;
+    
+
+    public CameraControl mCamControl;
     public XFormControl mXFormControl;
 	public GameObject mSelected, mSelectedControl;
     private Color mControlColor;
     public MyMesh mMesh;
+    public MyCylinderMesh mCylinder; //Similar to mMesh, but in cylinderical form
     public GameObject ControlAxes;
     private bool mControlAxesSet, mControlsActive;
     private Vector2 clickPosition;
 
+ 
+    public Dropdown CylinderPlaneToggle;
+    public GameObject CylinderResolutionControl;
+    public GameObject RotationCtrl;
+
+
+    //These enum values help us keep track of whether we're manipulating the
+    //plane, or the cylinder
+    enum quadType {Plane, Cylinder};
+    quadType selectedMode;
+
 	// Use this for initialization
 	void Start() {
+
+        //We start off manipulating the plane
+        selectedMode = quadType.Plane;
+
         Debug.Assert(mCamControl != null);
         Debug.Assert(mMesh != null);
+        Debug.Assert(mCylinder != null);
+
         mSelected = mSelectedControl = null;
         mXFormControl.SetSelectedMesh(mMesh);
         ControlAxes.SetActive(false);
         mControlAxesSet = mControlsActive = false;
 	}
+
+    public void SwitchMode()
+    {
+
+        int mode = CylinderPlaneToggle.value;
+
+        switch(mode)
+        {
+            case 0: //Plane
+                mMesh.gameObject.SetActive(true);
+                mCylinder.gameObject.SetActive(false);
+                DeactivateControls();
+                selectedMode = quadType.Plane;
+                RotationCtrl.SetActive(false);
+                CylinderResolutionControl.SetActive(false);
+
+                break;
+            case 1: //Cylinder
+                mMesh.gameObject.SetActive(false);
+                mCylinder.gameObject.SetActive(true);
+                DeactivateControls();
+                selectedMode = quadType.Cylinder;
+                RotationCtrl.SetActive(true);
+                CylinderResolutionControl.SetActive(true);
+
+                break;
+            default: Debug.Log("ERROR: This statement should not be reached");
+                break;
+
+        }
+
+    }
+    
 	
 	// Update is called once per frame
 	void Update() {
+        ProcessInput();
+	}
+
+    //Handle user input when we're manipulating the plane/cylinder
+    private void ProcessInput()
+    {
         if (Input.GetKey(KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftAlt))
         {
             if (!mControlsActive)
@@ -31,17 +91,28 @@ public class MainControl : MonoBehaviour {
                 ActivateControls();
                 mControlsActive = true;
             }
-            
+
             // Try to update the selection on every left mouse click
             if (Input.GetMouseButtonDown(0))
             {
                 GameObject selectedObject = mCamControl.UpdateSelection();
                 if (selectedObject)
                 {
-                    if (mMesh.IsMyControl(selectedObject))
-                        changeSelection(selectedObject);
-                    else if (selectedObject.transform.parent.gameObject == ControlAxes)
-                        StartManipulation(selectedObject);
+                    if (selectedMode == quadType.Plane)
+                    {
+                        if (mMesh.IsMyControl(selectedObject))
+                            changeSelection(selectedObject);
+                        else if (selectedObject.transform.parent.gameObject == ControlAxes)
+                            StartManipulation(selectedObject);
+                    } else if (selectedMode == quadType.Cylinder)
+                    {
+                        if (mCylinder.IsMyControl(selectedObject))
+                            changeSelection(selectedObject);
+                        else if (selectedObject.transform.parent.gameObject == ControlAxes)
+                            StartManipulation(selectedObject);
+                    }
+
+                    
                 }
                 else
                     Unselect();
@@ -63,7 +134,7 @@ public class MainControl : MonoBehaviour {
             DeactivateControls();
             mControlsActive = false;
         }
-	}
+    }
 
     // Only change selection when clicking on a new mesh control
     private void changeSelection(GameObject selected)
@@ -77,7 +148,7 @@ public class MainControl : MonoBehaviour {
         // Change newly selected color to yellow
         mSelected = selected;
         mSelected.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
-        ControlAxes.transform.localPosition = mSelected.transform.localPosition;
+        ControlAxes.transform.localPosition = mSelected.transform.localPosition; //TODO: Maybe this shouldn't be local?
         mControlAxesSet = true;
         ControlAxes.SetActive(true);
 	}
@@ -97,6 +168,7 @@ public class MainControl : MonoBehaviour {
         mSelectedControl = null;
     }
 
+    //TODO fix bug with z axis
     private void ContinueManipulation()
     {
         Vector2 mousePosition = Input.mousePosition;
@@ -126,13 +198,31 @@ public class MainControl : MonoBehaviour {
     private void DeactivateControls()
     {
         ControlAxes.SetActive(false);
-        mMesh.DeactivateControls();
+        if (selectedMode == quadType.Plane)
+        {
+            mMesh.DeactivateControls();
+        } else if (selectedMode == quadType.Cylinder)
+        {
+            mCylinder.DeactivateControls();
+        }
+        
     }
 
     private void ActivateControls()
     {
         if (mControlAxesSet)
             ControlAxes.SetActive(true);
-        mMesh.ActivateControls();
+
+        ControlAxes.SetActive(false);
+        if (selectedMode == quadType.Plane)
+        {
+            mMesh.ActivateControls();
+        }
+        else if (selectedMode == quadType.Cylinder)
+        {
+            mCylinder.ActivateControls();
+        }
+
+        //mMesh.ActivateControls();
     }
 }

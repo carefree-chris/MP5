@@ -1,21 +1,24 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class ResolutionControl : MonoBehaviour {
+public class CylinderResolutionControl : MonoBehaviour {
 
     public SliderWithEcho NResolutionSlider;
     public SliderWithEcho MResolutionSlider;
-    public MyMesh mMesh;
+    public MyCylinderMesh mMesh;
     public MainControl mMainControl;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         InitSliders();
     }
 
     void InitSliders()
     {
-        NResolutionSlider.InitSliderRange(2.0f, 20.0f, mMesh.N);
-        MResolutionSlider.InitSliderRange(2.0f, 20.0f, mMesh.M);
+        NResolutionSlider.InitSliderRange(3.0f, 20.0f, mMesh.N);
+        MResolutionSlider.InitSliderRange(3.0f, 20.0f, mMesh.M);
 
         NResolutionSlider.SetSliderListener(NResolutionChanged);
         MResolutionSlider.SetSliderListener(MResolutionChanged);
