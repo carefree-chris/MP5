@@ -69,18 +69,24 @@ public class MyCylinderMesh : MonoBehaviour {
                     0f,
                     origin.z + Mathf.Sin(Mathf.Deg2Rad * adjustedDegrees));
 
-                adjustedPosition.Normalize();
+                Vector3 myOrigin = Vector3.zero;
+                myOrigin.y = mControllers[j + i].transform.localPosition.y;
+                
+                Vector3 direction = adjustedPosition.normalized;
+
+                float distance = (mControllers[j + i].transform.localPosition - myOrigin).magnitude;
+                //adjustedPosition.Normalize();
                 
 
                 //adjustedPosition *= (origin - original).magnitude;
 
-                adjustedPosition.y = mControllers[j + i].transform.localPosition.y;
+                //adjustedPosition.y = mControllers[j + i].transform.localPosition.y;
 
                 
 
                 //TODO - Make it so x and y are preserved during rotation.
                 
-                mControllers[j + i].transform.localPosition = origin + adjustedPosition;
+                mControllers[j + i].transform.localPosition = (myOrigin) + (direction * distance);
             }
 
             adjustedDegrees += (degrees / N);
