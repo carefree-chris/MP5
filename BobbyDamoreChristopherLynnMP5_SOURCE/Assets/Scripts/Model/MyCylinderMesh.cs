@@ -41,6 +41,8 @@ public class MyCylinderMesh : MonoBehaviour {
         {
             degrees = nVal;
             SetDegreesHelper();
+            Mesh theMesh = GetComponent<MeshFilter>().mesh;
+            UpdateNormals(theMesh.vertices, theMesh.normals);
             return true;
         }
 
@@ -50,18 +52,12 @@ public class MyCylinderMesh : MonoBehaviour {
     //TODO stop arrows from pointing in the wrong direction.
     private void SetDegreesHelper()
     {
-
-
-        
         int adjustedDegrees = 0;
         
          for (int i = 0; i < (N + 1) * (M + 1); i = i + M + 1)
          {
-
-
             for (int j = 0; j < M + 1; j++)
             {
-
                 Vector3 original = mControllers[j + i].transform.localPosition;
 
                 Vector3 adjustedPosition = new Vector3(
@@ -75,16 +71,6 @@ public class MyCylinderMesh : MonoBehaviour {
                 Vector3 direction = adjustedPosition.normalized;
 
                 float distance = (mControllers[j + i].transform.localPosition - myOrigin).magnitude;
-                //adjustedPosition.Normalize();
-                
-
-                //adjustedPosition *= (origin - original).magnitude;
-
-                //adjustedPosition.y = mControllers[j + i].transform.localPosition.y;
-
-                
-
-                //TODO - Make it so x and y are preserved during rotation.
                 
                 mControllers[j + i].transform.localPosition = (myOrigin) + (direction * distance);
             }
@@ -215,7 +201,7 @@ public class MyCylinderMesh : MonoBehaviour {
         int[] t = theMesh.triangles;
         
 
-        // Set each vertex to the same position as it's controller
+        // Here we update each vertex, according to the controlling vertices
         for (int i = 0; i <= M; i++)
         {
             
@@ -234,7 +220,7 @@ public class MyCylinderMesh : MonoBehaviour {
 
                 //Debug.DrawRay(myOrigin, (mControllers[j].transform.position - myOrigin).normalized * distance, Color.red);
                 mControllers[j].transform.localPosition = direction * distance;
-
+                
                 mControllers[j].transform.localPosition = new Vector3(
                     mControllers[j].transform.localPosition.x,
                     mControllers[i].transform.localPosition.y,

@@ -4,7 +4,12 @@ using UnityEngine.UI;
 
 public class MainControl : MonoBehaviour {
 
-    
+    //The cylinder and plane have two different camera angles, given below.
+    private Vector3 camera1Position = new Vector3(-30f, 15f, 0f);
+    private Vector3 camera1Rotation = new Vector3(20f, 90f, 0f);
+
+    private Vector3 camera2Position = new Vector3(1f, 15f, -20f);
+    private Vector3 camera2Rotation = new Vector3(30f, 0f, 0f);
 
     public CameraControl mCamControl;
     public XFormControl mXFormControl;
@@ -43,6 +48,7 @@ public class MainControl : MonoBehaviour {
         mControlAxesSet = mControlsActive = false;
 	}
 
+    //For the dropdown menu, when switching between cylinder/plane
     public void SwitchMode()
     {
 
@@ -58,6 +64,10 @@ public class MainControl : MonoBehaviour {
                 RotationCtrl.SetActive(false);
                 CylinderResolutionControl.SetActive(false);
 
+                //The plane and cylinder use different camera settings
+                Camera.main.transform.position = camera1Position;
+                Camera.main.transform.eulerAngles = camera1Rotation;
+
                 break;
             case 1: //Cylinder
                 mMesh.gameObject.SetActive(false);
@@ -66,6 +76,9 @@ public class MainControl : MonoBehaviour {
                 selectedMode = quadType.Cylinder;
                 RotationCtrl.SetActive(true);
                 CylinderResolutionControl.SetActive(true);
+
+                Camera.main.transform.position = camera2Position;
+                Camera.main.transform.eulerAngles = camera2Rotation;
 
                 break;
             default: Debug.Log("ERROR: This statement should not be reached");
@@ -148,7 +161,7 @@ public class MainControl : MonoBehaviour {
         // Change newly selected color to yellow
         mSelected = selected;
         mSelected.GetComponent<Renderer>().material.SetColor("_Color", Color.yellow);
-        ControlAxes.transform.localPosition = mSelected.transform.localPosition; //TODO: Maybe this shouldn't be local?
+        ControlAxes.transform.position = mSelected.transform.position; //TODO: Maybe this shouldn't be local?
         mControlAxesSet = true;
         ControlAxes.SetActive(true);
 	}
